@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: network-reliability-framework
+Version: 0.1.0
+Summary: A Python framework for testing network connectivity and reliability.
+Requires-Python: >=3.10
+License-File: license
+Dynamic: license-file
