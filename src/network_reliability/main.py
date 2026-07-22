@@ -2,7 +2,8 @@
 
 import argparse
 
-from network_reliability.models import PingResult, TcpResult
+from network_reliability.dns import resolve_host
+from network_reliability.models import DnsResult, PingResult, TcpResult
 from network_reliability.ping import ping_host
 from network_reliability.tcp import test_tcp_port
 
@@ -68,6 +69,16 @@ def create_argument_parser() -> argparse.ArgumentParser:
         help="Connection timeout in seconds (default: 3).",
     )
 
+    dns_parser = subparsers.add_parser(
+        "dns",
+        help="Resolve a hostname to IPv4 and IPv6 addresses.",
+    )
+
+    dns_parser.add_argument(
+        "target",
+        help="Hostname to resolve.",
+    )
+
     return parser
 
 
@@ -112,6 +123,27 @@ def display_tcp_result(result: TcpResult) -> None:
         print(f"Message:             {result.error}")
 
 
+def display_dns_result(result: DnsResult) -> None:
+    """Display a DNS resolution result in a readable terminal format."""
+    resolution_status = "Yes" if result.resolved else "No"
+
+    print("\nDNS Resolution Test")
+    print("-" * 30)
+    print(f"Target:           {result.target}")
+    print(f"Resolved:         {resolution_status}")
+
+    if result.resolution_time_ms is not None:
+        print(f"Resolution time:  {result.resolution_time_ms:.2f} ms")
+
+    if result.addresses:
+        print("Addresses:")
+        for address in result.addresses:
+            print(f"  - {address.address} ({address.version})")
+
+    if result.error:
+        print(f"Message:          {result.error}")
+
+
 def main() -> None:
     """Run the requested network test."""
     parser = create_argument_parser()
@@ -133,6 +165,10 @@ def main() -> None:
                 timeout_seconds=arguments.timeout,
             )
             display_tcp_result(result)
+
+        elif arguments.command == "dns":
+            result = resolve_host(target=arguments.target)
+            display_dns_result(result)
 
     except ValueError as exc:
         parser.error(str(exc))

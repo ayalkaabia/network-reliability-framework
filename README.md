@@ -6,12 +6,12 @@ A Python-based command-line framework for testing network connectivity and servi
 
 * [x] Cross-platform ICMP ping connectivity testing
 * [x] TCP port availability testing
+* [x] Dedicated DNS resolution testing
 * [x] Packet-loss calculation
 * [x] Minimum, maximum, and average ping latency
 * [x] TCP connection-time measurement
 * [x] Hostname resolution error handling
 * [x] Automated tests with pytest
-* [ ] Dedicated DNS resolution testing
 * [ ] Repeated reliability monitoring
 * [ ] JSON and CSV report generation
 * [ ] Logging and configuration files
@@ -31,12 +31,14 @@ network-reliability-framework/
 ├── src/
 │   └── network_reliability/
 │       ├── __init__.py
+│       ├── dns.py
 │       ├── main.py
 │       ├── models.py
 │       ├── ping.py
 │       └── tcp.py
 ├── tests/
 │   ├── __init__.py
+│   ├── test_dns.py
 │   ├── test_ping.py
 │   └── test_tcp.py
 ├── .gitignore
@@ -153,6 +155,39 @@ Connected:           No
 Message:             The hostname could not be resolved.
 ```
 
+### DNS Resolution Test
+
+Resolve a hostname to IPv4 and IPv6 addresses:
+
+```bash
+python -m network_reliability.main dns google.com
+```
+
+DNS resolution confirms that a hostname can be mapped to one or more IP addresses. It does not prove that the host or any service on it is reachable.
+
+Example successful result:
+
+```text
+DNS Resolution Test
+------------------------------
+Target:           google.com
+Resolved:         Yes
+Resolution time:  15.42 ms
+Addresses:
+  - 142.250.185.78 (IPv4)
+  - 2a00:1450:4006:80e::200e (IPv6)
+```
+
+Example resolution failure:
+
+```text
+DNS Resolution Test
+------------------------------
+Target:           host-that-does-not-exist.invalid
+Resolved:         No
+Message:          The hostname could not be resolved.
+```
+
 ## Testing
 
 Run all automated tests:
@@ -177,6 +212,12 @@ Current test coverage includes:
 * Successful local TCP connections
 * Invalid hostname handling
 * Invalid port and timeout handling
+* DNS target validation
+* IPv4 and IPv6 DNS resolution
+* Duplicate DNS address removal
+* DNS resolution timing
+* DNS error handling without live network access
+* DNS CLI subcommand parsing
 
 ## Limitations
 
@@ -184,11 +225,13 @@ Ping testing depends on ICMP echo responses. Some reachable hosts or networks ma
 
 TCP testing checks only the specified port. A failed TCP connection may mean that the port is closed, filtered by a firewall, timed out, or unavailable even when the host itself is online.
 
+DNS resolution confirms hostname-to-address mapping only. A successful DNS result does not mean that the host is online or that any application service is reachable. Address order follows the operating system resolver and may differ across machines.
+
 Connection times vary depending on network conditions, DNS resolution, IPv4 or IPv6 selection, and the remote service.
 
 ## Project Status
 
-The project is under active development. The current version supports cross-platform ping testing and TCP port availability testing.
+The project is under active development. The current version supports cross-platform ping testing, TCP port availability testing, and dedicated DNS resolution testing.
 
 ## Author
 
