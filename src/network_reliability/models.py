@@ -20,3 +20,14 @@ class PingResult:
     maximum_latency_ms: float | None
     average_latency_ms: float | None
     error: str | None = None
+    
+@dataclass(frozen=True)
+class TcpResult:
+    """Represent the result of a TCP port connectivity test."""
+
+    target: str
+    port: int
+    connected: bool
+    connection_time_ms: float | None
+    resolved_ip: str | None
+    error: str | None = None
