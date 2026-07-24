@@ -31,3 +31,25 @@ class TcpResult:
     connection_time_ms: float | None
     resolved_ip: str | None
     error: str | None = None
+
+@dataclass(frozen=True)
+class DnsAddress:
+    """A single resolved IP address and its IP version label."""
+
+    address: str
+    version: str  # "IPv4" or "IPv6"
+
+
+@dataclass(frozen=True)
+class DnsResult:
+    """Represent the result of a DNS resolution test.
+
+    A successful result means the hostname mapped to one or more addresses.
+    It does not prove that the host or any service on it is reachable.
+    """
+
+    target: str
+    resolved: bool
+    resolution_time_ms: float | None
+    addresses: tuple[DnsAddress, ...]
+    error: str | None = None
